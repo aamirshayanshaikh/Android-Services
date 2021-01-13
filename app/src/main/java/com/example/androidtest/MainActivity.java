@@ -13,6 +13,7 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
+import com.example.androidtest.services.MyIntentService;
 import com.example.androidtest.services.MyService;
 
 
@@ -25,25 +26,18 @@ public class MainActivity extends AppCompatActivity  {
     private TextView mLog;
     private ProgressBar mProgressBar;
 
-    private BroadcastReceiver mReciever = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            log(intent.getStringExtra(KEY));
-        }
-    };
+
 
 
     @Override
     protected void onStart() {
         super.onStart();
-        LocalBroadcastManager.getInstance(MainActivity.this).registerReceiver(mReciever,
-                new IntentFilter(DownloadHandler.SEND_DATA_ACTION));
+
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        LocalBroadcastManager.getInstance(MainActivity.this).unregisterReceiver(mReciever);
     }
 
     @Override
@@ -58,7 +52,7 @@ public class MainActivity extends AppCompatActivity  {
 
 
         for (String song:PlayList.songs){
-            Intent intent = new Intent(MainActivity.this, MyService.class);
+            Intent intent = new Intent(MainActivity.this, MyIntentService.class);
             intent.putExtra(KEY, song);
             startService(intent);
         }
