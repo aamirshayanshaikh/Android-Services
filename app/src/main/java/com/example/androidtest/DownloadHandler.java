@@ -1,29 +1,28 @@
 package com.example.androidtest;
 
-import android.app.Activity;
 import android.app.Service;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
-import android.os.ResultReceiver;
 import android.util.Log;
+
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
 
 public class DownloadHandler extends Handler {
 
 
-    private ResultReceiver resultReceiver;
+    public static final String SEND_DATA_ACTION = "sendAction";
     private Service service;
+    private Context mContext;
 
 
     public DownloadHandler() {
 
     }
 
-    public void setResultReceiver(ResultReceiver resultReceiver) {
-        this.resultReceiver = resultReceiver;
-    }
+
 
 
     public void setService(Service service) {
@@ -33,12 +32,21 @@ public class DownloadHandler extends Handler {
     @Override
     public void handleMessage(Message msg) {
 
-        service.stopSelf(msg.arg1);
+
         downloadSong(msg.obj.toString());
+        service.stopSelf(msg.arg1);
         Bundle bundle = new Bundle();
         bundle.putString(MainActivity.KEY, msg.obj.toString());
-        resultReceiver.send(MainActivity.RESULT_OK, bundle);
+        sendDatatoUI(msg.obj.toString());
 
+    }
+
+
+    private void sendDatatoUI(String s){
+        Intent intent = new Intent(SEND_DATA_ACTION);
+        intent.putExtra(MainActivity.KEY, s);
+
+        LocalBroadcastManager.getInstance(mContext).sendBroadcast(intent);
     }
 
     private void downloadSong(final String songName){
@@ -52,4 +60,7 @@ public class DownloadHandler extends Handler {
         Log.d(MainActivity.TAG, "downloadSong: "+songName+" Downloaded...");
     }
 
+    public void setmContext(Context mContext) {
+        this.mContext = mContext;
+    }
 }

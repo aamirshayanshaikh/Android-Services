@@ -1,19 +1,19 @@
 package com.example.androidtest;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.localbroadcastmanager.content.LocalBroadcastManager;
+
 import com.example.androidtest.services.MyService;
-import java.util.Arrays;
-import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity  {
@@ -25,6 +25,26 @@ public class MainActivity extends AppCompatActivity  {
     private TextView mLog;
     private ProgressBar mProgressBar;
 
+    private BroadcastReceiver mReciever = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            log(intent.getStringExtra(KEY));
+        }
+    };
+
+
+    @Override
+    protected void onStart() {
+        super.onStart();
+        LocalBroadcastManager.getInstance(MainActivity.this).registerReceiver(mReciever,
+                new IntentFilter(DownloadHandler.SEND_DATA_ACTION));
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(MainActivity.this).unregisterReceiver(mReciever);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,11 +57,9 @@ public class MainActivity extends AppCompatActivity  {
     public void runCode(View v) {
 
 
-        MyResultReciever resultReciever = new MyResultReciever(null);
         for (String song:PlayList.songs){
             Intent intent = new Intent(MainActivity.this, MyService.class);
             intent.putExtra(KEY, song);
-            intent.putExtra(Intent.EXTRA_RESULT_RECEIVER, resultReciever);
             startService(intent);
         }
 
@@ -86,28 +104,6 @@ public class MainActivity extends AppCompatActivity  {
     }
 
 
-    public class MyResultReciever extends ResultReceiver{
-
-        public MyResultReciever(Handler handler) {
-
-             super(handler);
-
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, final Bundle resultData) {
-            super.onReceiveResult(resultCode, resultData);
-            if (resultCode == RESULT_OK && resultData != null){
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        log(resultData.getString(KEY));
-                    }
-                });
-            }
-
-        }
-    }
 
 
 }

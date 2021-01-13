@@ -2,22 +2,18 @@ package com.example.androidtest.services;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.ResultReceiver;
 import android.util.Log;
 
 import com.example.androidtest.DownloadThread;
 import com.example.androidtest.MainActivity;
-import com.example.androidtest.PlayList;
 
 public class MyService extends Service {
 
     private static final String TAG = "MyResult";
     private DownloadThread thread;
 
-    //this is started service
 
     public MyService() {
 
@@ -37,6 +33,7 @@ public class MyService extends Service {
         }
 
         thread.mHandler.setService(this);
+        thread.mHandler.setmContext(getApplicationContext());
 
     }
 
@@ -49,9 +46,6 @@ public class MyService extends Service {
         //Log.d(TAG, "onStartCommand: called: Intent Id: "+startId);
         final String songName=intent.getStringExtra(MainActivity.KEY);
 
-
-        ResultReceiver resultReceiver = intent.getParcelableExtra(Intent.EXTRA_RESULT_RECEIVER);
-        thread.mHandler.setResultReceiver(resultReceiver);
 
         Message message = Message.obtain();
         message.obj = songName;
