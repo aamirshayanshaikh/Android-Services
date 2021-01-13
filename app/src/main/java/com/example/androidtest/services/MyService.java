@@ -18,6 +18,7 @@ public class MyService extends Service {
     //this is started service
 
     public MyService() {
+
     }
 
 
