@@ -27,17 +27,27 @@ public class MainActivity extends AppCompatActivity  {
     private ProgressBar mProgressBar;
 
 
-
+    private BroadcastReceiver mReciever = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            if (intent != null && intent.getStringExtra(KEY) != null){
+                log(intent.getStringExtra(KEY));
+            }
+        }
+    };
 
     @Override
     protected void onStart() {
         super.onStart();
 
+        LocalBroadcastManager.getInstance(getApplicationContext())
+                .registerReceiver(mReciever, new IntentFilter(MyIntentService.BROADCAST_INTENT_ACTION));
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        LocalBroadcastManager.getInstance(getApplicationContext()).unregisterReceiver(mReciever);
     }
 
     @Override

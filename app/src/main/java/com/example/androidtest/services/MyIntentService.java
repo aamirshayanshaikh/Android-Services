@@ -2,6 +2,7 @@ package com.example.androidtest.services;
 
 import android.app.IntentService;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
@@ -11,6 +12,8 @@ import com.example.androidtest.MainActivity;
 
 public class MyIntentService extends IntentService {
 
+
+    public static final String BROADCAST_INTENT_ACTION = "broadcastIntentAction";
 
     public MyIntentService() {
         super("MyIntentService");
@@ -27,6 +30,11 @@ public class MyIntentService extends IntentService {
 
         String songName = intent.getStringExtra(MainActivity.KEY);
         downloadSong(songName);
+
+
+        Intent intent1 = new Intent(BROADCAST_INTENT_ACTION);
+        intent1.putExtra(MainActivity.KEY,songName);
+        LocalBroadcastManager.getInstance(getApplicationContext()).sendBroadcast(intent1);
 
     }
 
