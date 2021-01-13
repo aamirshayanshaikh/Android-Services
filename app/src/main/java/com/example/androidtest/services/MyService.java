@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.IBinder;
 import android.os.Message;
-import android.os.ResultReceiver;
 import android.util.Log;
 
 import com.example.androidtest.DownloadThread;
@@ -15,7 +14,6 @@ import com.example.androidtest.PlayList;
 public class MyService extends Service {
 
     private static final String TAG = "MyResult";
-    private DownloadThread thread;
 
     //this is started service
 
@@ -29,13 +27,6 @@ public class MyService extends Service {
         super.onCreate();
         Log.d(TAG, "onCreate: called");
 
-        thread = new DownloadThread();
-        thread.start();
-        while (thread.mHandler == null){
-
-        }
-        thread.mHandler.setmService(this);
-
     }
 
 
@@ -47,17 +38,12 @@ public class MyService extends Service {
         //Log.d(TAG, "onStartCommand: called: Intent Id: "+startId);
         final String songName=intent.getStringExtra(MainActivity.KEY);
 
+        MyDownloadTask myDownloadTask = new MyDownloadTask();
+        myDownloadTask.execute(songName);
 
-
-        thread.mHandler.setmReciever((ResultReceiver) intent.getParcelableExtra(Intent.EXTRA_RESULT_RECEIVER));
-
-
-        Message message = Message.obtain();
-        message.obj = songName;
-        message.arg1 = startId;
-        thread.mHandler.handleMessage(message);
-
-        return START_REDELIVER_INTENT;
+        //return START_STICKY;  // On Application crash restarts service without passing intent
+        //return START_NOT_STICKY;  // Service doesn’t start automatically, intent is also null
+        return START_REDELIVER_INTENT; // Service restarts automatically and intent is also passed and is not null
     }
 
     @Override
@@ -73,4 +59,33 @@ public class MyService extends Service {
     }
 
 
+    class MyDownloadTask extends AsyncTask<String, String, String>{
+
+        @Override
+        protected String doInBackground(String... strings) {
+            for (String song: strings) {
+                try {
+                    Thread.sleep(2000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                publishProgress(song);
+            }
+
+
+
+            return "All songs downloaded";
+        }
+
+
+        @Override
+        protected void onProgressUpdate(String... values) {
+            Log.d(TAG, "onProgressUpdate: Song Downloded "+values[0]);
+        }
+
+        @Override
+        protected void onPostExecute(String s) {
+            Log.d(TAG, "onPostExecute: "+s);
+        }
+    }
 }
