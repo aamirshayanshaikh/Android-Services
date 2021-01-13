@@ -3,8 +3,6 @@ package com.example.androidtest;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
@@ -37,12 +35,9 @@ public class MainActivity extends AppCompatActivity  {
     public void runCode(View v) {
 
 
-        MyResultReciever resultReciever = new MyResultReciever(null);
-
         for (String song:PlayList.songs){
             Intent intent = new Intent(MainActivity.this, MyService.class);
             intent.putExtra(KEY, song);
-            intent.putExtra(Intent.EXTRA_RESULT_RECEIVER, resultReciever);
             startService(intent);
         }
 
@@ -87,28 +82,7 @@ public class MainActivity extends AppCompatActivity  {
     }
 
 
-    public class MyResultReciever extends ResultReceiver{
 
-
-        public MyResultReciever(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-            super.onReceiveResult(resultCode, resultData);
-            if (resultCode == RESULT_OK && resultData != null){
-
-                final String res = resultData.getString(KEY);
-                runOnUiThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        log(res);
-                    }
-                });
-            }
-        }
-    }
 
 
 }
