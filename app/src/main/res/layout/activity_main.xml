@@ -60,6 +60,15 @@
             android:text="Show" />
 
         <Button
+            android:id="@+id/play"
+            style="?android:attr/buttonBarButtonStyle"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:onClick="onBtnMusicClicked"
+            android:text="Play" />
+
+        <Button
             android:id="@+id/Button02"
             style="?android:attr/buttonBarButtonStyle"
             android:layout_width="0dp"
